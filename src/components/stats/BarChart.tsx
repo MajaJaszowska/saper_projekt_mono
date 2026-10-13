@@ -232,7 +232,7 @@ export function BarChart({
 
         {aktywnaGrupa !== undefined && active !== null && (
           <div
-            className="border-line bg-surface pointer-events-none absolute top-0 z-10 rounded-lg border px-2 py-1 text-sm shadow-lg"
+            className="border-line bg-surface pointer-events-none absolute top-0 z-10 border px-2 py-1 text-sm"
             style={{
               left: `${((PAD.left + slot * (active + 0.5)) / WIDTH) * 100}%`,
               transform: `translateX(${active > groups.length / 2 ? "-100%" : "0"})`,

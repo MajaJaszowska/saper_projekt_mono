@@ -145,7 +145,7 @@ export function LineChart({ title, description, points, unit, xTitle, yTitle, ma
 
         {active !== null && aktywnyPunkt !== undefined && (
           <div
-            className="border-line bg-surface pointer-events-none absolute top-0 z-10 rounded-lg border px-2 py-1 text-sm shadow-lg"
+            className="border-line bg-surface pointer-events-none absolute top-0 z-10 border px-2 py-1 text-sm"
             style={{
               left: `${(xOf(active) / WIDTH) * 100}%`,
               transform: `translateX(${active > ostatni / 2 ? "calc(-100% - 8px)" : "8px"})`,

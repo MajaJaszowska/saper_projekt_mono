@@ -2,7 +2,7 @@
 
 :root {
   --bg: #f4f6fb;
-  --surface: #ffffff;
+  --surface: #fbfaff;
   --surface-2: #eef1f7;
   --text: #111827;
   --muted: #4b5563;
@@ -50,8 +50,8 @@
   --board-bg: #dfe4ee;
   --board-gap: 2px;
   --board-pad: 8px;
-  --board-radius: 14px;
-  --cell-radius: 6px;
+  --board-radius: 0px;
+  --cell-radius: 0px;
   --cell-hidden: #8b9bd8;
   --cell-hidden-hover: #7284cf;
   --cell-hidden-text: #111827;
@@ -78,8 +78,8 @@
   --board-bg: #0b1220;
   --board-gap: 2px;
   --board-pad: 8px;
-  --board-radius: 14px;
-  --cell-radius: 6px;
+  --board-radius: 0px;
+  --cell-radius: 0px;
   --cell-hidden: #5b6bb5;
   --cell-hidden-hover: #6c7cc6;
   --cell-hidden-text: #f1f5f9;
@@ -106,8 +106,8 @@
   --board-bg: #140f26;
   --board-gap: 2px;
   --board-pad: 8px;
-  --board-radius: 14px;
-  --cell-radius: 6px;
+  --board-radius: 0px;
+  --cell-radius: 0px;
   --cell-hidden: #6243c4;
   --cell-hidden-hover: #7455d6;
   --cell-hidden-text: #ffffff;
@@ -134,12 +134,12 @@
   --board-bg: #05060a;
   --board-gap: 2px;
   --board-pad: 8px;
-  --board-radius: 6px;
-  --cell-radius: 3px;
+  --board-radius: 0px;
+  --cell-radius: 0px;
   --cell-hidden: #161b36;
   --cell-hidden-hover: #222a52;
   --cell-hidden-text: #e0f2fe;
-  --cell-raised-shadow: inset 0 0 0 1px #22d3ee, 0 0 6px rgb(34 211 238 / 0.45);
+  --cell-raised-shadow: inset 0 0 0 1px #22d3ee;
   --cell-hidden-border: transparent;
   --cell-revealed: #0b0e1a;
   --cell-revealed-border: #1e2440;
@@ -162,8 +162,8 @@
   --board-bg: #23212e;
   --board-gap: 2px;
   --board-pad: 8px;
-  --board-radius: 16px;
-  --cell-radius: 8px;
+  --board-radius: 0px;
+  --cell-radius: 0px;
   --cell-hidden: #a59cd0;
   --cell-hidden-hover: #b4acda;
   --cell-hidden-text: #1c1a26;
@@ -252,7 +252,7 @@
   --cell-shape: var(--cell-radius);
 }
 :root[data-cell-style="rounded"] {
-  --cell-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+  --cell-shadow: none;
   --cell-shape: 38%;
 }
 
@@ -293,13 +293,12 @@ body {
   min-height: 2.5rem;
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--surface);
   color: var(--text);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.15s;
 }
 .btn:hover {
   background: var(--surface-2);
@@ -335,7 +334,7 @@ body {
   width: 3rem;
   height: 1.75rem;
   border: 2px solid var(--text);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--surface);
   cursor: pointer;
 }
@@ -347,7 +346,7 @@ body {
   display: block;
   width: 1.1rem;
   height: 1.1rem;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--text);
   transform: translateX(0.2rem);
   transition: transform 0.15s;
@@ -373,7 +372,7 @@ body {
   min-height: 2.5rem;
   padding: 0.4rem 0.7rem;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--surface);
   color: var(--text);
 }
@@ -381,7 +380,7 @@ body {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 1rem;
 }
 
@@ -420,7 +419,7 @@ body {
 .display {
   min-width: 4.2rem;
   padding: 0.25rem 0.6rem;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--display-bg);
   color: var(--display-text);
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -439,7 +438,7 @@ body {
   height: 3rem;
   padding: 0.3rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--surface);
   font-size: 1.6rem;
   line-height: 1;
@@ -556,7 +555,7 @@ body {
   width: 2.5rem;
   height: 2.5rem;
   border: 3px solid var(--surface);
-  border-radius: 999px;
+  border-radius: 0;
   outline: 2px solid var(--border);
   cursor: pointer;
 }
@@ -652,7 +651,7 @@ body {
   flex-shrink: 0;
   width: 0.8rem;
   height: 0.8rem;
-  border-radius: 3px;
+  border-radius: 0;
 }
 .swatch-1 {
   background: var(--series-1);
@@ -675,7 +674,7 @@ body {
 }
 
 .skeleton {
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--border);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
@@ -707,10 +706,9 @@ body {
   transform: translate(-50%, -50%);
   padding: 1.25rem;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.35);
 }
 
 @keyframes dialog-in {

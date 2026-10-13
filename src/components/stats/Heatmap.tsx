@@ -75,7 +75,6 @@ export function Heatmap({ title, description, days, formatDate, table }: Props) 
                 y={TOP + dzien.weekday * (CELL + GAP)}
                 width={CELL}
                 height={CELL}
-                rx="4"
                 fill={kolorPola(poziomKoloru(dzien.count, max))}
                 stroke={active?.date === dzien.date ? "var(--text)" : "none"}
                 strokeWidth="2"
@@ -96,7 +95,7 @@ export function Heatmap({ title, description, days, formatDate, table }: Props) 
           {[-1, 0, 1, 2, 3].map((poziom) => (
             <span
               key={poziom}
-              className="inline-block h-3 w-3 rounded-sm"
+              className="inline-block h-3 w-3"
               style={{ background: kolorPola(poziom) }}
             />
           ))}

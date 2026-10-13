@@ -50,9 +50,9 @@ const formatDayKey = (dayKey: string): string =>
 
 function KartaStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card">
-      <div className="text-muted text-sm">{label}</div>
-      <div className="mt-1 text-2xl font-bold tabular-nums sm:text-3xl">{value}</div>
+    <div className="border-line flex items-baseline justify-between gap-4 border-b py-1.5">
+      <dt className="text-muted text-sm">{label}</dt>
+      <dd className="text-lg font-bold tabular-nums">{value}</dd>
     </div>
   );
 }
@@ -128,7 +128,7 @@ function Podsumowanie({ records, now }: { records: ReadonlyArray<GameRecord>; no
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <dl className="card grid gap-x-8 sm:grid-cols-2">
         <KartaStat label="Rozegrane gry" value={String(statystyki.played)} />
         <KartaStat label="Odsetek wygranych" value={`${procent(statystyki)}%`} />
         <KartaStat label="Najdłuższa seria wygranych" value={String(serie(przefiltrowane).best)} />
@@ -147,7 +147,7 @@ function Podsumowanie({ records, now }: { records: ReadonlyArray<GameRecord>; no
             (seconds) => `${seconds} s`,
           )}
         />
-      </div>
+      </dl>
 
       {przefiltrowane.length === 0 ? (
         <p className="card text-muted text-center">Brak gier dla wybranych filtrów.</p>

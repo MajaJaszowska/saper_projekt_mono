@@ -6,19 +6,23 @@ import { useDaneGry } from "./AppProvider";
 function BadgeIcon({ unlocked }: { unlocked: boolean }) {
   return (
     <svg viewBox="0 0 24 24" className="h-10 w-10 shrink-0" aria-hidden="true">
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
+      <rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
         fill={unlocked ? "var(--accent)" : "var(--surface-2)"}
         stroke={unlocked ? "var(--accent)" : "var(--border)"}
         strokeWidth="1.5"
       />
       {unlocked ? (
-        <path d="M7 12.5l3.2 3.200L17 9" fill="none" stroke="var(--accent-text)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <>
+          <path d="M8.5 6v12" stroke="var(--accent-text)" strokeWidth="2" strokeLinecap="round" />
+          <path d="M9.5 6.500h7.500l-2.200 2.750 2.200 2.750H9.500z" fill="var(--accent-text)" />
+        </>
       ) : (
         <g fill="none" stroke="var(--muted)" strokeWidth="1.6" strokeLinecap="round">
-          <rect x="8" y="11" width="8" height="6" rx="1.2" />
+          <rect x="8" y="11" width="8" height="6" />
           <path d="M9.5 11V9.300a2.500 2.500 0 015 0V11" />
         </g>
       )}

@@ -46,7 +46,7 @@ export function CodePanel({ currentCode, onLoad, onRandom }: Props) {
         </p>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
-          <code className="bg-surface-2 rounded-lg px-2 py-1 font-mono" data-testid="current-code">
+          <code className="bg-surface-2 px-2 py-1 font-mono" data-testid="current-code">
             {currentCode}
           </code>
           <button type="button" className="btn" onClick={() => void kopiuj(currentCode)}>

@@ -126,7 +126,7 @@ function WyborAkcentu({ value, onChange }: { value: string; onChange: (kolor: st
           Własny
           <input
             type="color"
-            className="h-10 w-12 rounded-lg"
+            className="h-10 w-12"
             style={{ cursor: "pointer" }}
             value={value}
             onChange={(event) => onChange(event.target.value)}
