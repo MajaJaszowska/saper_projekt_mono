@@ -4,6 +4,7 @@ import { decodeRecords, type GameRecord } from "../core/record";
 import { DOMYSLNE, type Settings } from "../core/settings";
 import { czytajUstawienia, parseJson, odpakuj, odpakujUst } from "../core/stored";
 import { Either } from "../fp/monady";
+import type { Zapis } from "../reducers/reducerOdWszystkiego";
 import { getTime, losowySeed } from "./czas";
 
 export const KEYS = {
@@ -82,6 +83,21 @@ export const wyczyscDemo = (): string | null => {
     return "Nie udało się wyłączyć trybu demonstracyjnego";
   }
 };
+
+export function wykonajZapis(zapis: Zapis): string | null {
+  switch (zapis.co) {
+    case "settings":
+      return zapiszUstawienia(zapis.settings);
+    case "records":
+      return zapiszRekordy(zapis.records);
+    case "daily":
+      return zapiszDaily(zapis.daily);
+    case "demo":
+      return zapiszDemo(zapis.demo);
+    case "wyczyscDemo":
+      return wyczyscDemo();
+  }
+}
 
 export type Boot = {
   settings: Settings;

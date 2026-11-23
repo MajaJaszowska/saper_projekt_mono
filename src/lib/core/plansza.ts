@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import { Maybe } from "../fp/monady";
-import { memoize } from "../fp/pomocnicze";
+import { memoize } from "../fp/helperki";
 import type { Board, Cell, Mark, Pos, Size } from "./types";
 
 export const PUSTE_POLE: Cell = { mine: false, adjacent: 0, revealed: false, mark: "none" };

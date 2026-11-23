@@ -6,9 +6,8 @@ import { getTime, losowySeed, useZegar } from "@/lib/client/czas";
 import { PRESET_KEYS, NAZWY_POZIOMOW, jakiPreset, PRESETS } from "@/lib/core/config";
 import { CONFIG_DNIA, seedDnia, seriaDzienna, czyGral, dzisKlucz } from "@/lib/core/daily";
 import { czytajKod, zrobKod, type GameCode } from "@/lib/core/gameCode";
-import { doRekordu } from "@/lib/core/record";
+import { podsumujKoniec } from "@/lib/core/gameOverCoTeraz";
 import { configDla } from "@/lib/core/settings";
-import { rankOf } from "@/lib/core/statystyki";
 import type { Config, Kind, Pos, PresetKey } from "@/lib/core/types";
 import { ileMinZostalo } from "@/lib/core/ruchy";
 import { startGry, czasGry, type GameEvent, gameReducer, type GameState } from "@/lib/reducers/gameReducer";
@@ -47,55 +46,10 @@ export function Game() {
 
   const koniecGry = (gra: GameState) => {
     console.log("koniec gry", gra.status, gra);
-    if (gra.kind === "daily") {
-      if (dailyKey === null) return;
-      if (isDemo) {
-        setNotka("Tryb demonstracyjny: ten wynik nie został zapisany.");
-        return;
-      }
-      if (czyGral(daily, dailyKey)) {
-        setNotka("Dzisiejszy wynik planszy dnia jest juz zapisany. To była próba treningowa.");
-        return;
-      }
-
-      const wynik = {
-        dateKey: dailyKey,
-        won: gra.status === "won",
-        timeSec: czasGry(gra, gra.now),
-      };
-      addDaily(wynik);
-      if (wynik.won) {
-        setNotka(`Plansza dnia zaliczona! Seria: ${seriaDzienna([...daily, wynik], dailyKey)} dni.`);
-      } else {
-        setNotka("Plansza dnia zapisana. Jutro kolejna szansa.");
-      }
-    } else {
-      if (gra.kind !== "normal" || gra.finishedAt === null) return;
-      if (isDemo) {
-        setNotka("Tryb demonstracyjny: ten wynik nie został zapisany.");
-        return;
-      }
-
-      const rekord = doRekordu({
-        kind: gra.kind,
-        config: gra.config,
-        seed: gra.seed,
-        won: gra.status === "won",
-        finishedAt: gra.finishedAt,
-        timeSec: czasGry(gra, gra.now),
-        clicks: gra.clicks,
-        flagsUsed: gra.flagsUsed,
-      });
-      let tekst: string | null = null;
-      if (rekord.won && rekord.presetKey !== "custom") {
-        tekst = rankOf(rekord, [...records, rekord]).fold<string | null>(
-          () => null,
-          (rank) => (rank === 1 ? "Nowy rekord!" : `${rank}. miejsce w top 10`),
-        );
-      }
-      setNotka(tekst);
-      addRecord(rekord);
-    }
+    const { notka, zapis } = podsumujKoniec(gra, { dailyKey, isDemo, records, daily });
+    setNotka(notka);
+    if (zapis?.typ === "daily") addDaily(zapis.wynik);
+    if (zapis?.typ === "rekord") addRecord(zapis.rekord);
   };
 
   const ruch = (event: GameEvent) => {

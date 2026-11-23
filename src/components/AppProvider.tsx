@@ -1,26 +1,29 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { getTime, losowySeed } from "@/lib/client/czas";
 import {
-  type Boot,
-  wyczyscDemo,
-  wczytajWszystko,
-  zapiszDaily,
-  zapiszDemo,
-  zapiszRekordy,
-  zapiszUstawienia,
-} from "@/lib/client/storage";
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
+import { getTime, losowySeed } from "@/lib/client/czas";
+import { type Boot, wczytajWszystko, wykonajZapis } from "@/lib/client/storage";
 import { useUstawienia } from "@/lib/client/useApplySettings";
 import type { Backup } from "@/lib/core/backup";
-import { dodajDaily, type DailyResult } from "@/lib/core/daily";
+import type { DailyResult } from "@/lib/core/daily";
 import { type DemoState, daneDemo } from "@/lib/core/demo";
-import { dopiszRekord, type GameRecord } from "@/lib/core/record";
+import type { GameRecord } from "@/lib/core/record";
 import type { Settings } from "@/lib/core/settings";
-import { type SettingsAction, ustawieniaReducer } from "@/lib/reducers/settingsReducer";
+import { type AppData, appReducer, planZapisu } from "@/lib/reducers/reducerOdWszystkiego";
+import type { SettingsAction } from "@/lib/reducers/settingsReducer";
 import { Nav } from "./Nav";
-import { MockBoard, SzareLinie } from "./ui/MockBoard";
+import { MockBoard, SzareLinie } from "./ui/FejkowaPlansza";
 
 type App = {
   boot: Boot;
@@ -55,12 +58,31 @@ export function useDaneGry() {
   return { records, daily, isDemo: demo !== null, now };
 }
 
+const dodajKomunikat = (obecne: string[], blad: string) =>
+  obecne.includes(blad) ? obecne : [...obecne, blad];
+
+// zapisuje jak cos sie zmieni
+function useZapisDoStorage(stan: AppData, onBlad: (blad: string) => void) {
+  const poprzedni = useRef(stan);
+  useEffect(() => {
+    const zapisy = planZapisu(poprzedni.current, stan);
+    poprzedni.current = stan;
+    for (const zapis of zapisy) {
+      const blad = wykonajZapis(zapis);
+      if (blad !== null) onBlad(blad);
+    }
+  }, [stan, onBlad]);
+}
+
 function AppState({ boot, children }: { boot: Boot; children: ReactNode }) {
-  const [settings, setSettings] = useState(boot.settings);
-  const [realRecords, setRealRecords] = useState(boot.records);
-  const [realDaily, setRealDaily] = useState(boot.daily);
-  const [demo, setDemo] = useState<DemoState | null>(boot.demo);
+  const [stan, dispatch] = useReducer(appReducer, {
+    settings: boot.settings,
+    records: boot.records,
+    daily: boot.daily,
+    demo: boot.demo,
+  });
   const [komunikaty, setKomunikaty] = useState(boot.warnings);
+  const { settings, demo } = stan;
   const rekordyDemo = useMemo(
     () => (demo === null ? null : daneDemo(demo.seed, demo.count, demo.generatedAt)),
     [demo],
@@ -68,73 +90,31 @@ function AppState({ boot, children }: { boot: Boot; children: ReactNode }) {
 
   useUstawienia(settings);
 
-  const save = (blad: string | null) => {
-    if (blad !== null) {
-      setKomunikaty((obecny) => (obecny.includes(blad) ? obecny : [...obecny, blad]));
-    }
-  };
+  const pokazBlad = useCallback(
+    (blad: string) => setKomunikaty((obecne) => dodajKomunikat(obecne, blad)),
+    [],
+  );
+  useZapisDoStorage(stan, pokazBlad);
 
-  const stopDemo = () => {
-    setDemo(null);
-    save(wyczyscDemo());
-  };
+  const stopDemo = () => dispatch({ type: "STOP_DEMO" });
 
   const app: App = {
     boot,
     settings,
-    records: rekordyDemo ?? realRecords,
-    daily: demo === null ? realDaily : [],
+    records: rekordyDemo ?? stan.records,
+    daily: demo === null ? stan.daily : [],
     demo,
     startDemo: (count) => {
-      const d = {
-        seed: demo?.seed ?? losowySeed(),
-        count,
-        generatedAt: demo?.generatedAt ?? getTime(),
-      };
-      console.log("demo", d);
-      setDemo(d);
-      save(zapiszDemo(d));
+      console.log("demo", count);
+      dispatch({ type: "START_DEMO", count, seed: losowySeed(), now: getTime() });
     },
-    rerollDemo: () => {
-      if (demo === null) return;
-      const d = { ...demo, seed: losowySeed() };
-      setDemo(d);
-      save(zapiszDemo(d));
-    },
+    rerollDemo: () => dispatch({ type: "REROLL_DEMO", seed: losowySeed() }),
     stopDemo,
-    dispatchSettings: (action) => {
-      const nowe = ustawieniaReducer(settings, action);
-      setSettings(nowe);
-      save(zapiszUstawienia(nowe));
-    },
-    addRecord: (rekord) => {
-      if (demo !== null) return;
-      const lista = dopiszRekord(realRecords, rekord);
-      setRealRecords(lista);
-      save(zapiszRekordy(lista));
-    },
-    clearRecords: () => {
-      if (demo !== null) return;
-      setRealRecords([]);
-      setRealDaily([]);
-      save(zapiszRekordy([]));
-      save(zapiszDaily([]));
-    },
-    addDaily: (wynik) => {
-      if (demo !== null) return;
-      const lista = dodajDaily(realDaily, wynik);
-      setRealDaily(lista);
-      save(zapiszDaily(lista));
-    },
-    restoreBackup: (backup) => {
-      if (demo !== null) return;
-      setSettings(backup.settings);
-      setRealRecords(backup.records);
-      setRealDaily(backup.daily);
-      save(zapiszUstawienia(backup.settings));
-      save(zapiszRekordy(backup.records));
-      save(zapiszDaily(backup.daily));
-    },
+    dispatchSettings: (action) => dispatch({ type: "SETTINGS", action }),
+    addRecord: (rekord) => dispatch({ type: "ADD_RECORD", rekord }),
+    clearRecords: () => dispatch({ type: "CLEAR_RECORDS" }),
+    addDaily: (wynik) => dispatch({ type: "ADD_DAILY", wynik }),
+    restoreBackup: (backup) => dispatch({ type: "RESTORE_BACKUP", backup }),
   };
 
   return (
